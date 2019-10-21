@@ -1,0 +1,69 @@
+package com.itrip.biz.service.itripUser;
+
+import com.itrip.utils.common.Constants;
+import com.itrip.utils.common.EmptyUtils;
+import com.itrip.utils.common.Page;
+import com.itrip.dao.mapper.itripUser.ItripUserMapper;
+import com.itrip.beans.pojo.ItripUser;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+@Service
+@Transactional(rollbackFor = RuntimeException.class)
+
+public class ItripUserServiceImpl implements ItripUserService {
+
+    @Resource
+    private ItripUserMapper itripUserMapper;
+    @Override
+
+    public ItripUser getItripUserById(Long id)throws Exception{
+        return itripUserMapper.getItripUserById(id);
+    }
+    @Override
+
+    public List<ItripUser>	getItripUserListByMap(Map<String,Object> param)throws Exception{
+        return itripUserMapper.getItripUserListByMap(param);
+    }
+    @Override
+
+    public Integer getItripUserCountByMap(Map<String,Object> param)throws Exception{
+        return itripUserMapper.getItripUserCountByMap(param);
+    }
+    @Override
+
+    public Integer itriptxAddItripUser(ItripUser itripUser)throws Exception{
+            itripUser.setCreationDate(new Date());
+            return itripUserMapper.insertItripUser(itripUser);
+    }
+    @Override
+
+    public Integer itriptxModifyItripUser(ItripUser itripUser)throws Exception{
+        itripUser.setModifyDate(new Date());
+        return itripUserMapper.updateItripUser(itripUser);
+    }
+    @Override
+
+    public Integer itriptxDeleteItripUserById(Long id)throws Exception{
+        return itripUserMapper.deleteItripUserById(id);
+    }
+    @Override
+
+    public Page<ItripUser> queryItripUserPageByMap(Map<String,Object> param,Integer pageNo,Integer pageSize)throws Exception{
+        Integer total = itripUserMapper.getItripUserCountByMap(param);
+        pageNo = EmptyUtils.isEmpty(pageNo) ? Constants.DEFAULT_PAGE_NO : pageNo;
+        pageSize = EmptyUtils.isEmpty(pageSize) ? Constants.DEFAULT_PAGE_SIZE : pageSize;
+        Page page = new Page(pageNo, pageSize, total);
+        param.put("beginPos", page.getBeginPos());
+        param.put("pageSize", page.getPageSize());
+        List<ItripUser> itripUserList = itripUserMapper.getItripUserListByMap(param);
+        page.setRows(itripUserList);
+        return page;
+    }
+
+}
